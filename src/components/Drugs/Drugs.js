@@ -29,11 +29,11 @@ class Drugs extends React.Component{
 		const validations = {
 			isRequired: { 
 					value: true, 
-					message: 'error message' 
+					message: 'required field it is' 
 				},
 			maxLength: { 
-					value: 10, message: 'error message' },
-					minLength: { value: 10, message: 'error message' }
+					value: 11, message: 'max length is 11' },
+					minLength: { value: 10, message: 'min length is 10' }
 				}
 		const params = {
 			group: 'sample-group', // Group a set of validations with a unique name.
