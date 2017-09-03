@@ -1,2 +1,2 @@
-# v-react-example
-Example usage of v-react library
+# ReactSample
+Sample React Project

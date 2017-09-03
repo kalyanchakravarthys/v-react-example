@@ -1,0 +1,76 @@
+#app{
+	font-size: 14px;
+	color: #4d4d4d;
+/*	min-width: 550px;
+	max-width: 850px;*/
+	margin: 0 auto;
+}
+
+body, html{
+	background-color: #F6F6F6;
+}
+
+.container-fluid{
+	background-color: #F6F6F6;
+	height: 100%;
+}
+
+a.active{
+	color: #335177;
+}
+
+nav{
+	padding: 10px;
+	background-color: #335177;
+}
+
+.nav-tabs{
+	border-bottom: 0px !important;
+}
+
+.nav-tabs a{
+	color: #fff !important;
+}
+
+.no-margin{
+	margin:0px !important;
+}
+
+.no-padding{
+	padding:0px !important;
+}
+
+.left-menu{
+	background: transparent !important;
+	border-right: 1px solid silver;
+	border-left: 1px solid silver;
+	padding: 0px;
+}
+
+.left-menu li{
+	border-bottom: 1px solid silver;
+	padding-bottom: 10px !important;
+	padding-top: 10px !important;
+	margin: 0px !important;
+}
+
+.left-menu li:hover, .left-menu li a:hover{
+	background-color: #fff !important;
+	color: #000;
+}
+
+.left-menu li:hover .left-menu li a{
+	color:#000 !important;
+}
+
+.jumbotron{
+	background-color: #F6F6F6 !important;
+}
+
+.drug-item{
+	background-color: silver;
+	padding: 10px;
+	list-style: none;
+	margin-bottom: 1px;
+	display: table-cell;
+}
