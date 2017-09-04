@@ -1,7 +1,7 @@
 import {combineReducers} from 'redux';
-import drugs from './drugReducer';
+import users from './userReducer';
 import { errorReducer } from 'v-react';
 
-const rootReducer = combineReducers({  errorReducer, drugs });
+const rootReducer = combineReducers({  errorReducer, users });
 
 export default rootReducer;
