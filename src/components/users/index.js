@@ -15,42 +15,66 @@ class Users extends React.Component{
 				hasError: false,
 				errorMessage: '',
 				validationState: 'VALIDATION_NEUTRAL'
+			},
+			customField: {
+				isDirty: false,
+				hasError: false,
+				errorMessage: '',
+				validationState: 'VALIDATION_NEUTRAL'
 			}
 		};
 
 		this.onNameChange = this.onNameChange.bind(this);
 		this.onDescriptionChange = this.onDescriptionChange.bind(this);
 		this.onSaveData = this.onSaveData.bind(this);
-		this.validateName = this.validateName.bind(this);
+		this.validate = this.validate.bind(this);
+		this.onCustomValidationChange = this.onCustomValidationChange.bind(this);
+		this.validationConfig = {
+			name: {
+				isRequired: { 
+						value: true, 
+						message: 'required field it is' 
+					},
+				maxLength: { 
+						value: 11, message: 'max length is 11' },
+						minLength: { value: 10, message: 'min length is 10' }
+					},
+			customField : {
+				custom: [
+					{
+						name: 'customValidation1',
+						action: function(value) { 
+							debugger;
+							return value ? value.indexOf('a') >= 0 : false 
+						},
+						message: 'this field should not contain character a'
+					}
+				]
+			}
+		}
 	}
 
-	validateName(name) {
-		const validations = {
-			isRequired: { 
-					value: true, 
-					message: 'required field it is' 
-				},
-			maxLength: { 
-					value: 11, message: 'max length is 11' },
-					minLength: { value: 10, message: 'min length is 10' }
-				}
+
+	validate(value, fieldName, validations) {
 		const params = {
 			group: 'sample-group', // Group a set of validations with a unique name.
-			name: 'sample-name', // Unique name for the validation. This should be different for each of the field.
-			value: name, // Value to be validated.
+			name: fieldName, // Unique name for the validation. This should be different for each of the field.
+			value, // Value to be validated.
 			validations,
 			isDirty: true, // Only if you set this value to true, validations check will be performed.
-			fieldName: 'userName', // Name of the field to be validated
+			fieldName: fieldName, // Name of the field to be validated
 			state: Object.assign({}, this.state), // Local state, only if you have followed the STEP 3,
 			setError: this.props.errorActions.setErrors // Fetch the set error function from 'v-react' and pass it on the set validity function
 		};
 		const result = setValidity(params);
-		this.setState({ 'userName': params.state['userName']});
-		return params.state['userName'];
+		const newState = Object.assign({}, this.state)
+		newState[fieldName] = params.state[fieldName]
+		this.setState(newState);
+		return params.state[fieldName];
 	}
 
 	onNameChange(e){
-		this.validateName(e.target.value)
+		this.validate(e.target.value, 'userName', this.validationConfig.name)
 		const newUser = Object.assign({}, this.state.user)
 		newUser.name = e.target.value
 		this.setState({user: newUser});
@@ -62,9 +86,16 @@ class Users extends React.Component{
 		this.setState({user: newUser});
 	}
 
+	onCustomValidationChange(e) {
+		this.validate(e.target.value, 'customField', this.validationConfig.customField)
+		const newUser = Object.assign({}, this.state.user)
+		newUser.customField = e.target.value
+		this.setState({user: newUser});
+	}
+
 	onSaveData(e){
 		e.preventDefault()
-		const result = this.validateName(this.state.user.name)
+		const result = this.validate(e.target.value, 'userName', this.validationConfig.name)
 		if(!result.hasError){
 			this.props.saveUser(this.state.user);
 		} else {
@@ -95,6 +126,11 @@ class Users extends React.Component{
 						<div className="form-group">
 							<label>Description:</label>
 							<textarea type="text" className="form-control" onChange={this.onDescriptionChange} value={this.state.user.description}></textarea>
+						</div>
+						<div className="form-group">
+							<label>Custom Validation(Field Without vowels):</label>
+							<textarea type="text" className="form-control" onChange={this.onCustomValidationChange} value={this.state.user.customField}></textarea>
+							<span style={validationMessageStyle}>{this.state.customField.errorMessage}</span>
 						</div>
 						<button className="btn btn-primary" onClick={this.onSaveData}>Save</button>
 					</section>
