@@ -21,11 +21,10 @@ class Users extends React.Component{
 		this.onNameChange = this.onNameChange.bind(this);
 		this.onDescriptionChange = this.onDescriptionChange.bind(this);
 		this.onSaveData = this.onSaveData.bind(this);
+		this.validateName = this.validateName.bind(this);
 	}
 
-	onNameChange(e){
-		const _user = this.state.user;
-		_user.name = e.target.value;
+	validateName(name) {
 		const validations = {
 			isRequired: { 
 					value: true, 
@@ -38,7 +37,7 @@ class Users extends React.Component{
 		const params = {
 			group: 'sample-group', // Group a set of validations with a unique name.
 			name: 'sample-name', // Unique name for the validation. This should be different for each of the field.
-			value: e.target.value, // Value to be validated.
+			value: name, // Value to be validated.
 			validations,
 			isDirty: true, // Only if you set this value to true, validations check will be performed.
 			fieldName: 'userName', // Name of the field to be validated
@@ -46,20 +45,31 @@ class Users extends React.Component{
 			setError: this.props.errorActions.setErrors // Fetch the set error function from 'v-react' and pass it on the set validity function
 		};
 		const result = setValidity(params);
-		console.log(result);
 		this.setState({ 'userName': params.state['userName']});
+		return params.state['userName'];
+	}
 
-		this.setState({user: _user});
+	onNameChange(e){
+		this.validateName(e.target.value)
+		const newUser = Object.assign({}, this.state.user)
+		newUser.name = e.target.value
+		this.setState({user: newUser});
 	}
 
 	onDescriptionChange(e){
-		const _user = this.state.user;
-		_user.description = e.target.value;
-		this.setState({user: _user});
+		const newUser = Object.assign({}, this.state.user)
+		newUser.description = e.target.value
+		this.setState({user: newUser});
 	}
 
 	onSaveData(e){
-		this.props.saveUser(this.state.user);
+		e.preventDefault()
+		const result = this.validateName(this.state.user.name)
+		if(!result.hasError){
+			this.props.saveUser(this.state.user);
+		} else {
+			 alert('please fix validation issues')
+		}
 	}
 
 	renderUsersRow(user, index){
@@ -78,7 +88,7 @@ class Users extends React.Component{
 					<section className="col-md-4">
 						<h3>Add User</h3>
 						<div className="form-group">
-							<label>User Name:</label>
+							<label>* User Name:</label>
 							<input	name="userName"	type="text"	style={this.state.userName.hasError ? validationInputStyle : {} } onChange={this.onNameChange}	className="form-control"	value={this.state.user.name}/>
 							<span style={validationMessageStyle}>{this.state.userName.errorMessage}</span>
 						</div>
