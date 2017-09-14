@@ -9,7 +9,7 @@ class Users extends React.Component{
 	constructor(props, context){
 		super(props, context);
 		this.state = {
-			user: {name: '', description: ''},
+			user: {name: '', description: '', customField: ''},
 			userName: {
 				isDirty: false,
 				hasError: false,
@@ -29,6 +29,7 @@ class Users extends React.Component{
 		this.onSaveData = this.onSaveData.bind(this);
 		this.validate = this.validate.bind(this);
 		this.onCustomValidationChange = this.onCustomValidationChange.bind(this);
+		this.setCustomeFieldValidity = this.setCustomeFieldValidity.bind(this);
 		this.validationConfig = {
 			name: {
 				isRequired: { 
@@ -44,7 +45,6 @@ class Users extends React.Component{
 					{
 						name: 'customValidation1',
 						action: function(value) { 
-							debugger;
 							return value ? value.indexOf('a') >= 0 : false 
 						},
 						message: 'this field should not contain character a'
@@ -55,7 +55,7 @@ class Users extends React.Component{
 	}
 
 
-	validate(value, fieldName, validations) {
+	validate(value, fieldName, validations, callback) {
 		const params = {
 			group: 'sample-group', // Group a set of validations with a unique name.
 			name: fieldName, // Unique name for the validation. This should be different for each of the field.
@@ -69,8 +69,7 @@ class Users extends React.Component{
 		const result = setValidity(params);
 		const newState = Object.assign({}, this.state)
 		newState[fieldName] = params.state[fieldName]
-		this.setState(newState);
-		return params.state[fieldName];
+		this.setState(newState, callback ? callback : () => {});
 	}
 
 	onNameChange(e){
@@ -93,19 +92,28 @@ class Users extends React.Component{
 		this.setState({user: newUser});
 	}
 
+	setCustomeFieldValidity() {
+		this.validate(this.state.user.customField, 'customField', this.validationConfig.customField, function(){
+			if(!this.state.userName.hasError && !this.state.customField.hasError){
+				this.props.saveUser(this.state.user);
+			} else {
+				 alert('please fix validation issues')
+			}
+		})
+	}
+
 	onSaveData(e){
 		e.preventDefault()
-		const result = this.validate(e.target.value, 'userName', this.validationConfig.name)
-		if(!result.hasError){
-			this.props.saveUser(this.state.user);
-		} else {
-			 alert('please fix validation issues')
-		}
+		this.validate(this.state.user.name, 'userName', this.validationConfig.name, this.setCustomeFieldValidity)
 	}
 
 	renderUsersRow(user, index){
 		var descId = 'desc' + index;
-		return <li className='user-item col-md-12'><div key={index} className="col-md-12"><b>User Name:</b> {user.name}</div>  <div key={descId} className="col-md-12"><b>Description:</b> {user.description}</div></li>;
+		return (<li className='user-item col-md-12'>
+					<div key={index} className="col-md-12"><b>User Name:</b> {user.name}</div>  
+					<div key={descId} className="col-md-12"><b>Description:</b> {user.description}</div>
+					<div key={`${index} cf`} className="col-md-12"><b>Custom Field:</b> {user.customField}</div>
+				</li>);
 	}
 
 	render(){
@@ -128,7 +136,7 @@ class Users extends React.Component{
 							<textarea type="text" className="form-control" onChange={this.onDescriptionChange} value={this.state.user.description}></textarea>
 						</div>
 						<div className="form-group">
-							<label>Custom Validation(Field Without vowels):</label>
+							<label>Custom Validation(Field Without char 'a'):</label>
 							<textarea type="text" className="form-control" onChange={this.onCustomValidationChange} value={this.state.user.customField}></textarea>
 							<span style={validationMessageStyle}>{this.state.customField.errorMessage}</span>
 						</div>
